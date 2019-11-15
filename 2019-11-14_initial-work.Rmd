@@ -1,0 +1,63 @@
+---
+title: "inital work"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(tidyverse)
+library(lubridate)
+```
+
+Loading data and doing some preliminary exploration.
+
+I think one part of this would be some factor engineering to create something that could take into account the weather data. 
+
+
+Reading the data:
+
+```{r}
+weather_train <- read_csv("data/weather_test.csv")
+```
+
+
+## EDA
+
+Getting some summaries of the data 
+
+I want a plot of an the average temperature, let's pick July, average temperature for each hour for the entire month
+
+```{r}
+wthr <- weather_train %>% filter(month(timestamp) == 7) %>% 
+  mutate(day. = day(timestamp), hr = hour(timestamp)) %>% 
+  group_by(site_id, day., hr) %>% 
+  summarize(avg_hr_temp = mean(air_temperature))
+```
+
+
+### what about the distribution of sites and buildings? 
+
+```{r}
+metabldg <- read_csv("data/building_metadata.csv") 
+```
+
+so how do sites and buildings break down?
+
+```{r}
+metabldg %>% group_by(site_id) %>% 
+  summarize(counts = n())
+```
+  
+
+Site representation
+
+```{r}
+metabldg %>% group_by(site_id) %>% 
+  summarize(counts = n()) %>% 
+  ggplot(aes(x = site_id, y = counts)) + 
+  geom_bar(stat = "identity")
+```
+
+
+
